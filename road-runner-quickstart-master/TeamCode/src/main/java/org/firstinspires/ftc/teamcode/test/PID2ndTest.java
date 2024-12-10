@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @Config
 @TeleOp
-public class PID2ndTest extends LinearOpMode {
+public class PID2ndTest extends OpMode {
     //all the "private" stuff
     // double multiplier;
     //    YawPitchRollAngles_7ByawPitchRollAnglesVariable_7D;
