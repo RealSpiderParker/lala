@@ -7,27 +7,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
 @Config
 @TeleOp
 public class PID2ndTest extends OpMode {
-    //all the "private" stuff
-    // double multiplier;
-    //    YawPitchRollAngles_7ByawPitchRollAnglesVariable_7D;
-    //    double rotX;
-    //    float x;
-    //    double rotY;
-    //    float y;
-    //private DcMotor FrontL,BackL, FrontR,BackR,Actuator,ExtendMoto;
     private PIDController controller;
-private IMU imu_IMU;
     private DcMotorEx motor1,motor2;
 
     public static double p = .009, i = 0, d = .0001;
@@ -38,6 +26,7 @@ private IMU imu_IMU;
 
     @Override
     public void init() {
+        //runopmode
 controller = new PIDController(p, i, d);
 telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 motor1 = hardwareMap.get(DcMotorEx.class, "LeftM");
