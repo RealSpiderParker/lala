@@ -119,30 +119,27 @@ public class MAINteleOP extends LinearOpMode {
                 } else {
                     pivot.setPosition(0.3);
                 }
-                if (gamepad2.y) {
-                    target = 420;
-                }
-                if (gamepad2.a) {
-                    target = 15;
-                }
-                if (gamepad2.b) {
-                    claw.setPosition(0.425);
+                if (gamepad2.x) {
+                    claw.setPosition(0.5);
                 } else {
                     claw.setPosition(0);
                 }
-                if (gamepad2.x) {
+                if (gamepad2.b) {
                     wrist.setPosition((1));
                 } else {
                     wrist.setPosition(0.375);
                 }
-                if (gamepad1.a) {
+                if (gamepad2.dpad_down) {
+                    target = 15;
+                }
+                if (gamepad2.dpad_up) {
                     target = 700;
                 }
-                if (gamepad1.x) {
-                    pivot.setPosition(1);
+                if (gamepad2.dpad_left) {
+                    target = 200;
                 }
-                if (gamepad1.b) {
-                    target 550;
+                if (gamepad2.dpad_right)    {
+                    target = 500;
                 }
                 LeftM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 RightM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
