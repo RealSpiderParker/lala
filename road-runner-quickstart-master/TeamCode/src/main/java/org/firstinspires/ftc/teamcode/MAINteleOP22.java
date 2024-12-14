@@ -1,28 +1,25 @@
-package org.firstinspires.ftc.teamcode.test;
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.controller.PIDController;
+package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-@Config
-@TeleOp(name = "MAINteleOP")
-public class MAINteleOP extends LinearOpMode {
-    private PIDController controller;
-    public static double p = .009, i = 0, d = .0001;
-    public static double f = .1;
-    public static int target = 0;
-    private final double ticks_in_degrees = 780 / 180.0;
+
+@TeleOp(name = "MAINteleOP22 (Blocks to Java)")
+public class MAINteleOP22 extends LinearOpMode {
+
     private IMU imu_IMU;
-   private DcMotor FrontL,BackL,FrontR,BackR;
-   private DcMotor LeftM,RightM;
+    private DcMotor FrontL;
+    private DcMotor BackL;
+    private DcMotor FrontR;
+    private DcMotor BackR;
+    private DcMotor LeftM;
+    private DcMotor RightM;
+    private DcMotor Acuator;
     private Servo claw;
     private Servo pivot;
     private Servo wrist;
@@ -48,12 +45,11 @@ public class MAINteleOP extends LinearOpMode {
         BackR = hardwareMap.get(DcMotor.class, "BackR");
         LeftM = hardwareMap.get(DcMotor.class, "LeftM");
         RightM = hardwareMap.get(DcMotor.class, "RightM");
+        Acuator = hardwareMap.get(DcMotor.class, "AcuatorAsDcMotor");
         claw = hardwareMap.get(Servo.class, "claw");
         pivot = hardwareMap.get(Servo.class, "pivot");
         wrist = hardwareMap.get(Servo.class, "wrist");
         ExtendMoto = hardwareMap.get(DcMotor.class, "ExtendMoto");
-        controller = new PIDController(p, i, d);
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // Initializes the IMU with non-default settings. To use this block,
         // plug one of the "new IMU.Parameters" blocks into the parameters socket.
@@ -70,29 +66,18 @@ public class MAINteleOP extends LinearOpMode {
         // In this example, the right motor was reversed so that positive
         // applied power makes it move the robot in the forward direction.
         BackL.setDirection(DcMotor.Direction.REVERSE);
-        RightM.setDirection(DcMotorSimple.Direction.REVERSE);
         FrontR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FrontL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         LeftM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         RightM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Acuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
         if (opModeIsActive()) {
             imu_IMU.resetYaw();
             while (opModeIsActive()) {
-                //public void loop
-                controller.setPID(p, i, d);
-                int armPos = LeftM.getCurrentPosition();
-                double pid = controller.calculate(armPos, target);
-                double ff = Math.cos(Math.toRadians(target / ticks_in_degrees)) * f;
-                double power = pid + ff;
-
-                LeftM.setPower(power);
-                RightM.setPower(power);
-
                 // Put loop blocks here.
-
                 _7ByawPitchRollAnglesVariable_7D = imu_IMU.getRobotYawPitchRollAngles();
                 if (gamepad1.right_bumper) {
                     multiplier = 0.5;
@@ -101,49 +86,37 @@ public class MAINteleOP extends LinearOpMode {
                 }
                 gamepad();
                 setPower();
-
                 // Pressing Y will Reset the IMU for Field Centric
                 if (gamepad1.y) {
                     imu_IMU.resetYaw();
                 }
                 // This is the code for the 3D printed Claw
-
-                if (gamepad2.left_bumper) {
-                    pivot.setPosition(.6);
-                } else if (gamepad2.right_bumper) {
-                    pivot.setPosition(-.1);
-                } else {
-                    pivot.setPosition(0.3);
-                }
-                if (gamepad2.x) {
-                    claw.setPosition(.35);
+                if (gamepad2.a) {
+                    claw.setPosition(0.425);
                 } else {
                     claw.setPosition(0);
+                }
+                if (gamepad2.y) {
+                    pivot.setPosition(0.1);
+                } else if (gamepad2.left_bumper) {
+                    pivot.setPosition(1);
+                } else {
+                    pivot.setPosition(0.3);
                 }
                 if (gamepad2.b) {
                     wrist.setPosition(1);
                 } else {
                     wrist.setPosition(0.375);
                 }
-                if (gamepad2.dpad_down) {
-                    target = 15;
-                }
-                if (gamepad2.dpad_up) {
-                    target = 850;
-                }
-                if (gamepad2.dpad_left) {
-                    target-=15;
-                }
-                if (gamepad2.dpad_right)    {
-                    target = 500;
-                }
+                LeftM.setPower(-gamepad2.left_stick_y);
+                RightM.setPower(gamepad2.left_stick_y);
                 LeftM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 RightM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                Acuator.setPower(gamepad1.right_trigger);
+                Acuator.setPower(-gamepad1.left_trigger);
+                Acuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 ExtendMoto.setPower(gamepad2.right_stick_y);
                 ExtendMoto.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                telemetry.addData("pos ", armPos);
-                telemetry.addData("target ", target);
-                telemetry.update();
                 data();
             }
         }
