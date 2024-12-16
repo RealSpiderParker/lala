@@ -36,6 +36,7 @@ motor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
     @Override
     public void loop() {
+        //while opmode is active
 controller.setPID(p, i, d);
 int armPos = motor1.getCurrentPosition();
 double pid = controller.calculate(armPos, target);

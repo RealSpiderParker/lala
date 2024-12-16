@@ -111,12 +111,12 @@ public class MAINteleOP extends LinearOpMode {
                 if (gamepad2.left_bumper) {
                     pivot.setPosition(.6);
                 } else if (gamepad2.right_bumper) {
-                    pivot.setPosition(-.1);
+                    pivot.setPosition(0);
                 } else {
                     pivot.setPosition(0.3);
                 }
                 if (gamepad2.x) {
-                    claw.setPosition(.35);
+                    claw.setPosition(.43);
                 } else {
                     claw.setPosition(0);
                 }
@@ -126,16 +126,16 @@ public class MAINteleOP extends LinearOpMode {
                     wrist.setPosition(0.375);
                 }
                 if (gamepad2.dpad_down) {
-                    target = 15;
+                    target-= 15;
                 }
                 if (gamepad2.dpad_up) {
-                    target = 850;
+                    target+= 15;
                 }
                 if (gamepad2.dpad_left) {
-                    target-=15;
+                    target-= 25;
                 }
                 if (gamepad2.dpad_right)    {
-                    target = 500;
+                    target+= 25;
                 }
                 LeftM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 RightM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
