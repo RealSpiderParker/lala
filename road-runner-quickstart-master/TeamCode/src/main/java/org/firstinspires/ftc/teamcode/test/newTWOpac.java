@@ -15,10 +15,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
-public class twoPacTele extends LinearOpMode {
-    private IMU imu;
-    private DcMotor bLeft,bRight,fLeft,fRight,armL,armR,EM1;
-    private Servo rCl,lCl,intakeCl,wrist,rPiv,lPiv,scoop;
+@Config
+@TeleOp
+public class newTWOpac extends LinearOpMode {
+
+    private IMU imu_IMU;
+    private DcMotor fLeft,bLeft,fRight,bRight,armL,armR,EM1;
+    private Servo rCl,lCl,intakeCl,wrist,rPiv,scoop;
     double multiplier;
     YawPitchRollAngles _7ByawPitchRollAnglesVariable_7D;
     double rotX;
@@ -26,7 +29,6 @@ public class twoPacTele extends LinearOpMode {
     float rx;
     double rotY;
     float y;
-
     //PID stuff...
     private PIDController controller;
     public static double p = 0.009, i = 0, d = 0.0001;
@@ -39,9 +41,13 @@ public class twoPacTele extends LinearOpMode {
     public static double p2 = .009, i2 = 0, d2 = .0001;
     public static int target2 = 0;
 
+
+    /**
+     * This function is executed when this Op Mode is selected from the Driver Station.
+     */
     @Override
     public void runOpMode() {
-        imu = hardwareMap.get(IMU.class, "imu");
+        imu_IMU = hardwareMap.get(IMU.class, "imu");
         fLeft = hardwareMap.get(DcMotor.class, "fLeft");
         bLeft = hardwareMap.get(DcMotor.class, "bLeft");
         fRight = hardwareMap.get(DcMotor.class, "fRight");
@@ -53,33 +59,30 @@ public class twoPacTele extends LinearOpMode {
         lCl = hardwareMap.get(Servo.class, "lCl");
         intakeCl = hardwareMap.get(Servo.class, "intakeCl");
         rPiv = hardwareMap.get(Servo.class, "rPiv");
-        lPiv = hardwareMap.get(Servo.class, "lPiv");
         wrist = hardwareMap.get(Servo.class, "wrist");
         scoop = hardwareMap.get(Servo.class, "scoop");
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         controller = new PIDController(p,i,d);
         controller2 = new PIDController(p2,i2,d2);
 
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.UP)));
+
+        imu_IMU.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.UP)));
+
         fLeft.setDirection(DcMotor.Direction.REVERSE);
         bLeft.setDirection(DcMotor.Direction.REVERSE);
-        EM1.setDirection(DcMotorSimple.Direction.REVERSE);
-        armR.setDirection(DcMotor.Direction.REVERSE);
-        rPiv.setDirection(Servo.Direction.REVERSE);
         fRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        EM1.setDirection(DcMotorSimple.Direction.REVERSE);
+        armR.setDirection(DcMotor.Direction.REVERSE);
+        rPiv.setDirection(Servo.Direction.REVERSE);
 
         waitForStart();
         if (opModeIsActive()) {
-
-            imu.resetYaw();
-            // Put run blocks here.
+            imu_IMU.resetYaw();
             while (opModeIsActive()) {
-                // Put loop blocks here.
-                _7ByawPitchRollAnglesVariable_7D = imu.getRobotYawPitchRollAngles();
-
+                _7ByawPitchRollAnglesVariable_7D = imu_IMU.getRobotYawPitchRollAngles();
                 //pid stuff...
                 controller.setPID(p,i,d);
                 int armPos = armL.getCurrentPosition();
@@ -101,8 +104,7 @@ public class twoPacTele extends LinearOpMode {
                 } else {
                     multiplier = 1;
                 }
-
-                if (gamepad2.right_bumper) {
+                if (gamepad2.y) {
                     lCl.setPosition(.15);
                     rCl.setPosition(.15);
                 } else {
@@ -111,16 +113,16 @@ public class twoPacTele extends LinearOpMode {
                 }
                 //arm
                 if (gamepad2.dpad_left) {
-                    target = 1000;
+                    target+= 30;
                 }
                 if (gamepad2.dpad_right) {
-                    target = 775;
+                    target-= 30;
                 }
                 if (gamepad2.dpad_down) {
-                    target = 60;
+                    target = 80;
                 }
                 if (gamepad2.dpad_up) {
-                    target = 170;
+                    target = 50;
                 }
 
                 if (gamepad1.y) {
@@ -131,13 +133,14 @@ public class twoPacTele extends LinearOpMode {
                     wrist.setPosition(.29);
                 }
 
-                if (gamepad2.left_bumper) {
+                if (gamepad2.right_bumper) {
+
                     intakeCl.setPosition(.4);
                 } else {
-                intakeCl.setPosition(.2);
+                    intakeCl.setPosition(.2);
                 }
 
-                if (gamepad1.left_bumper) {
+                if (gamepad2.left_bumper) {
                     target2 = 345;
                 } else {
                     target2 = 25;
@@ -156,12 +159,11 @@ public class twoPacTele extends LinearOpMode {
                 } else {
                     rPiv.setPosition(.5);
                 }
-                //rPiv 1 = up 0, 0 = down. can reset the position by disconnecting and connecting in preferred area.
+
                 gamepad();
                 setPower();
-                // Pressing Right Bumper will Reset the IMU for Field Centric
                 if (gamepad1.a) {
-                    imu.resetYaw();
+                    imu_IMU.resetYaw();
                 }
                 telemetry.addData("pos", armPos);
                 telemetry.addData("target", target);
@@ -170,20 +172,24 @@ public class twoPacTele extends LinearOpMode {
             }
         }
     }
+
+    /**
+     * Describe this function...
+     */
     private void gamepad() {
         double theta;
 
-        // Use left stick to drive and right stick to turn
-        // You may have to negate the sticks. When you
-        // negate a stick, negate all other instances of the stick
         x = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
         rx = gamepad1.right_stick_x;
         theta = -_7ByawPitchRollAnglesVariable_7D.getYaw(AngleUnit.DEGREES);
-        // Calculated Values
         rotX = x * Math.cos(theta / 180 * Math.PI) - y * Math.sin(theta / 180 * Math.PI);
         rotY = x * Math.sin(theta / 180 * Math.PI) + y * Math.cos(theta / 180 * Math.PI);
     }
+
+    /**
+     * Describe this function...
+     */
     private void setPower() {
         // The Y axis of a joystick ranges from -1 in its topmost position to +1 in its bottommost position.
         // We negate this value so that the topmost position corresponds to maximum forward power.
@@ -194,6 +200,10 @@ public class twoPacTele extends LinearOpMode {
         bLeft.setPower(((rotY - rotX) + rx) * multiplier);
         bRight.setPower(((rotY + rotX) - rx) * multiplier);
     }
+
+    /**
+     * Describe this function...
+     */
     private void data() {
         telemetry.addData("IMU Yaw:", _7ByawPitchRollAnglesVariable_7D.getYaw(AngleUnit.DEGREES));
         telemetry.addData("rotX", rotX);
@@ -208,4 +218,3 @@ public class twoPacTele extends LinearOpMode {
         telemetry.update();
     }
 }
-////this is a new code
